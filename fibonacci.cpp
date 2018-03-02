@@ -6,24 +6,85 @@
 
 void matrixMultiply(mpz_t matrix1[], mpz_t matrix2[], mpz_t temp[]);
 void twobytwopower(int exponent, mpz_t matrix[]);
-void fib(int num);
+void fibQuick(int fibNum, mpz_t result);
+void fibSlow(int fibNum, mpz_t result);
+
+int cmdArgNum = 4; 
 
 int main(int argc, char** argv)
 {
-    int fibNum = 1;
-    std::cout << "What fibonacci do you want to calculate? Enter 0 to end." << std::endl;
-    std::cin >> fibNum;
-    while(fibNum)
-    {
-        std::cout << "What fibonacci do you want to calculate? Enter 0 to end." << std::endl;
-        fib(fibNum);
-        std::cin >> fibNum;
+    if(argc != cmdArgNum){
+        std::cout << "Wrong number of inputs.\nExpected " << cmdArgNum - 1 << "." <<  std::endl;
+        return 1;
     }
+    int fibNum;
+    bool doPrint;
+    int fibType;
+    std::istringstream iss(argv[1]);
+    std::istringstream bss(argv[2]);
+    std::istringstream tss(argv[3]);
+    if(iss >> fibNum && fibNum > 0){} //Sets fibNum as first command line argument if valid
+    else{
+        std::cout << "Invalid first argument. Expecting positive integer." << std::endl;
+        return 1;
+    }
+    if(bss >> doPrint){} //Sets doPrint as second command line argument if valid
+    else{
+        std::cout << "Invalid second argument. Expecting boolean." << std::endl;
+        return 1;
+    }
+    if(tss >> fibType && fibType > 0 && fibType < 4){} //Sets doPrint as second command line argument if valid
+    else{
+        std::cout << "Invalid third argument. Expecting boolean." << std::endl;
+        return 1;
+    }
+    mpz_t result;
+    mpz_init(result);
+    time_t calcTimerInit;
+    time_t calcTimerEnd;
+    if(fibType == 1){
+        time(&calcTimerInit);
+        fibQuick(fibNum, result);
+        time(&calcTimerEnd);
+    } else if(fibType == 2){
+        time(&calcTimerInit);
+        fibSlow(fibNum, result);
+        time(&calcTimerEnd);
+    } else if(fibType == 3){
+        mpz_t result2;
+        mpz_init(result2);
+        fibQuick(fibNum, result);
+        fibSlow(fibNum, result2);
+        if(mpz_cmp(result, result2) == 0){
+            std::cout << "Pass" << std::endl;
+            return 0;
+        }else{
+            std::cout << "Fail" << std::endl;
+            return 0;
+        }
+    } else{
+        std::cout << "Invalid fib type." << std::endl;
+        return 1;
+    }
+    if(doPrint){ time_t printTimerInit;
+        time_t printTimerEnd;
+        int lastDigit = fibNum % 10;
+        switch(lastDigit){
+            case 1: std::cout << fibNum << "st "; break;
+            case 2: std::cout << fibNum << "nd "; break;
+            case 3: std::cout << fibNum << "rd "; break;
+            default: std::cout << fibNum << "th ";
+        }
+        time(&printTimerInit);
+        std::cout << "fibonacci number is: " << result << std::endl;
+        time(&printTimerEnd);
+        std::cout << "Printing took " << difftime(printTimerEnd, printTimerInit) << " seconds." << std::endl;
+    }
+    std::cout << "Calculation took " << difftime(calcTimerEnd, calcTimerInit) << " seconds." << std::endl;
     return 0;
 }
 
-void matrixMultiply(mpz_t matrix1[], mpz_t matrix2[], mpz_t temp[])
-{
+void matrixMultiply(mpz_t matrix1[], mpz_t matrix2[], mpz_t temp[]){
     mpz_mul(temp[0], matrix1[0], matrix2[0]);
     mpz_addmul(temp[0], matrix1[1], matrix2[2]);
     mpz_mul(temp[1], matrix1[0], matrix2[1]);
@@ -38,22 +99,16 @@ void matrixMultiply(mpz_t matrix1[], mpz_t matrix2[], mpz_t temp[])
     mpz_set(matrix1[3], temp[3]);
 }
 
-void twobytwopower(int exponent, mpz_t matrix[])
-{
+void twobytwopower(int exponent, mpz_t matrix[]){
     mpz_t tempmatrix[4];
     mpz_t base[4];
-    mpz_init(tempmatrix[0]);
-    mpz_init(tempmatrix[1]);
-    mpz_init(tempmatrix[2]);
-    mpz_init(tempmatrix[3]);
-    mpz_init(base[0]);
-    mpz_init(base[1]);
-    mpz_init(base[2]);
-    mpz_init(base[3]);
+    for(int i = 0;i < 4;i++)
+        mpz_init(tempmatrix[i]);
+    for(int i = 0;i < 4;i++)
+        mpz_init(base[i]);
     int left = exponent;
     int power;
-    while(left > 0)
-    {
+    while(left > 0){
         power = static_cast<int>(log2(left));
         mpz_set_ui(base[0], 0);
         mpz_set_ui(base[1], 1);
@@ -64,32 +119,38 @@ void twobytwopower(int exponent, mpz_t matrix[])
         matrixMultiply(matrix, base, tempmatrix);
         left -= pow(2, power);
     }
+    for(int i = 0;i < 4;i++)
+        mpz_clear(tempmatrix[i]);
+    for(int i = 0;i < 4;i++)
+        mpz_clear(base[i]);
 }
 
-void fib(int num)
-{
-    time_t calcTimerInit;
-    time_t printTimerInit;
-    time_t calcTimerEnd;
-    time_t printTimerEnd;
-    time(&calcTimerInit);
+void fibQuick(int fibNum, mpz_t result){
     mpz_t matrix[4];
-    mpz_init(matrix[0]);
-    mpz_init(matrix[1]);
-    mpz_init(matrix[2]);
-    mpz_init(matrix[3]);
+    for(int i = 0;i < 4;i++)
+        mpz_init(matrix[i]);
     mpz_set_ui(matrix[0], 1);
     mpz_set_ui(matrix[1], 0);
     mpz_set_ui(matrix[2], 0);
     mpz_set_ui(matrix[3], 1);
-    twobytwopower(num, matrix);
-    mpz_t result;
-    mpz_init(result);
+    twobytwopower(fibNum, matrix);
     mpz_add(result, matrix[0], matrix[1]);
-    time(&calcTimerEnd);
-    //time(&printTimerInit);
-    //std::cout << result << std::endl;
-    //time(&printTimerEnd);
-    std::cout << "Calculation took" << difftime(calcTimerEnd, calcTimerInit) << "seconds." << std::endl;
-    //std::cout << "Printing took" << difftime(printTimerEnd, printTimerInit) << "seconds." << std::endl;
+    for(int i = 0;i < 4;i++)
+        mpz_clear(matrix[i]);
+}
+
+void fibSlow(int fibNum, mpz_t result){
+    mpz_t temp1;
+    mpz_init(temp1);
+    mpz_set_ui(temp1,0);
+    mpz_t temp2;
+    mpz_init(temp2);
+    mpz_set_ui(temp2,1);
+    for(int i = 0;i < fibNum;i++){
+        mpz_add(result, temp1, temp2);
+        mpz_set(temp1, temp2);
+        mpz_set(temp2, result);
+    }
+    mpz_clear(temp1);
+    mpz_clear(temp2);
 }
