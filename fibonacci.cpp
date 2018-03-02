@@ -10,10 +10,15 @@ void fib(int num);
 
 int main(int argc, char** argv)
 {
-    std::istringstream iss(argv[1]);
-    int val;
-    iss >> val;
-    fib(val);
+    int fibNum = 1;
+    std::cout << "What fibonacci do you want to calculate? Enter 0 to end." << std::endl;
+    std::cin >> fibNum;
+    while(fibNum)
+    {
+        std::cout << "What fibonacci do you want to calculate? Enter 0 to end." << std::endl;
+        fib(fibNum);
+        std::cin >> fibNum;
+    }
     return 0;
 }
 
@@ -85,6 +90,6 @@ void fib(int num)
     //time(&printTimerInit);
     //std::cout << result << std::endl;
     //time(&printTimerEnd);
-    st::cout << "Calculation took" << difftime(calcTimerEnd, calcTimerInit) << "seconds." << std::endl;
+    std::cout << "Calculation took" << difftime(calcTimerEnd, calcTimerInit) << "seconds." << std::endl;
     //std::cout << "Printing took" << difftime(printTimerEnd, printTimerInit) << "seconds." << std::endl;
 }
