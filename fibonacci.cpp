@@ -13,30 +13,34 @@ int cmdArgNum = 4;
 
 int main(int argc, char** argv)
 {
-    if(argc != cmdArgNum){
-        std::cout << "Wrong number of inputs.\nExpected " << cmdArgNum - 1 << "." <<  std::endl;
+    if(argc < 2 || argc > cmdArgNum){
+        std::cout << "Invalid number of inputs." << std::endl;
         return 1;
     }
     int fibNum;
-    bool doPrint;
-    int fibType;
+    bool doPrint = true;
+    int fibType = 1;
     std::istringstream iss(argv[1]);
-    std::istringstream bss(argv[2]);
-    std::istringstream tss(argv[3]);
     if(iss >> fibNum && fibNum > 0){} //Sets fibNum as first command line argument if valid
     else{
         std::cout << "Invalid first argument. Expecting positive integer." << std::endl;
         return 1;
     }
-    if(bss >> doPrint){} //Sets doPrint as second command line argument if valid
-    else{
-        std::cout << "Invalid second argument. Expecting boolean." << std::endl;
-        return 1;
+    if(argc > 2){
+        std::istringstream tss(argv[2]);
+        if(tss >> fibType && fibType > 0 && fibType < 4){} //Sets fibType as second command line argument if valid
+        else{
+            std::cout << "Invalid second argument. Expecting 1, 2, or 3." << std::endl;
+            return 1;
+        }
     }
-    if(tss >> fibType && fibType > 0 && fibType < 4){} //Sets doPrint as second command line argument if valid
-    else{
-        std::cout << "Invalid third argument. Expecting boolean." << std::endl;
-        return 1;
+    if(argc > 3){
+        std::istringstream bss(argv[3]);
+        if(bss >> doPrint){} //Sets doPrint as third command line argument if valid
+        else{
+            std::cout << "Invalid third argument. Expecting boolean." << std::endl;
+            return 1;
+        }
     }
     mpz_t result;
     mpz_init(result);
@@ -93,10 +97,8 @@ void matrixMultiply(mpz_t matrix1[], mpz_t matrix2[], mpz_t temp[]){
     mpz_addmul(temp[2], matrix1[3], matrix2[2]);
     mpz_mul(temp[3], matrix1[2], matrix2[1]);
     mpz_addmul(temp[3], matrix1[3], matrix2[3]);
-    mpz_set(matrix1[0], temp[0]);
-    mpz_set(matrix1[1], temp[1]);
-    mpz_set(matrix1[2], temp[2]);
-    mpz_set(matrix1[3], temp[3]);
+    for(int i = 0;i < 4;i++)
+        mpz_set(matrix1[i], temp[i]);
 }
 
 void twobytwopower(int exponent, mpz_t matrix[]){
