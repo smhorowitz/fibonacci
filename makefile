@@ -26,7 +26,8 @@ fibSlow: fib.out
 	./fib.out $(fibNum) 0 1
 
 clean:
-	rm *.out
-	rm *.swp
+	$(RM) *.out
+	$(RM) *.swp
+	$(RM) *.swo
 
 $(VERBOSE).SILENT: 
