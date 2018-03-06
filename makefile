@@ -16,7 +16,7 @@ endif
 test: fib.out
 	./fib.out>fibQuick $(fibNum) 2
 	./fib.out>fibSlow $(fibNum) 2 1
-	diff -s fibQuick fibSlow
+	cmp --silent fibQuick fibSlow && echo "SUCCESS" || "FAILURE"
 	rm fibQuick fibSlow
 
 fibQuick: fib.out
@@ -27,3 +27,5 @@ fibSlow: fib.out
 
 clean:
 	rm *.out
+
+$(VERBOSE).SILENT: 
