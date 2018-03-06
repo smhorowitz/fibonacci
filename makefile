@@ -27,5 +27,6 @@ fibSlow: fib.out
 
 clean:
 	rm *.out
+	rm *.swp
 
 $(VERBOSE).SILENT: 
