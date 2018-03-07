@@ -1,3 +1,6 @@
+RED=\033[31m
+GREEN=\033[5;32m
+NORMAL=\033[0m
 fibNum=1000000
 fib.out:
 ifeq (,$(wildcard /usr/local/include/gmpxx.h))
@@ -16,8 +19,8 @@ endif
 test: fib.out
 	./fib.out>fibQuick $(fibNum) 2
 	./fib.out>fibSlow $(fibNum) 2 1
-	cmp --silent fibQuick fibSlow && echo "SUCCESS" || "FAILURE"
-	rm fibQuick fibSlow
+	cmp --silent fibQuick fibSlow && echo "$(GREEN)SUCCESS$(NORMAL)" || "$(RED)FAILURE$(NORMAL)"
+	$(RM) fibQuick fibSlow
 
 fibQuick: fib.out
 	./fib.out $(fibNum)
@@ -26,8 +29,6 @@ fibSlow: fib.out
 	./fib.out $(fibNum) 0 1
 
 clean:
-	$(RM) *.out
-	$(RM) *.swp
-	$(RM) *.swo
+	$(RM) *.out *.swp *.swo
 
-$(VERBOSE).SILENT: 
+$(VERBOSE).SILENT: test

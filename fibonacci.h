@@ -2,7 +2,7 @@
 #include <math.h>
 #include <gmp.h>
 #include <sstream>
-#include <time.h> // TODO: Find a more accurate way to measure time
+#include <time.h> 
 
  
 void fibQuick(int fibNum, mpz_t result);

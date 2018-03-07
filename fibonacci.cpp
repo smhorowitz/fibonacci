@@ -3,7 +3,7 @@
 /*
  * Fibonacci is used to return the nth fibonacci number.
  * Has two methods, "quick" and "slow"
- * Uses mpz bigNum to handle calues larger than normal c++ data types
+ * Uses mpz bigNum to handle values larger than normal c++ data types
  * Quick - uses multiplication of 2x2 matrices for very fast calculation
  * Slow - traditional method using addition of previous values
  * Usage: fibonacci fibNum printType fibType
@@ -18,6 +18,8 @@
  */
 
 int cmdArgNum = 4; // Function has 4 total args: function, fibNum, printType, fibType
+
+struct timespec calcStart, calcFinish, printStart, printFinish;
 
 int main(int argc, char** argv)
 {
@@ -52,21 +54,17 @@ int main(int argc, char** argv)
     }
     mpz_t result; // Defines big integer for holding fibonacci value
     mpz_init(result); // mpz values must be initialized
-    time_t calcTimerInit; //    
-    time_t calcTimerEnd;  // Times used to figure out calculation time of function
-    time(&calcTimerInit);
+    clock_gettime(CLOCK_MONOTONIC, &calcStart);
     if(fibType) // Performs slow calculation if fibType is 1, quick calculation otherwise
         fibSlow(fibNum, result);
     else
         fibQuick(fibNum, result);
-    time(&calcTimerEnd);
+    clock_gettime(CLOCK_MONOTONIC, &calcFinish);
     if(printType){ // If printType is 0, only prints calculation time
         if(printType == 2){
             std::cout << result << std::endl;
             return 0; // Done after printing result of calculation
         }
-        time_t printTimerInit;
-        time_t printTimerEnd;
         int lastDigit = fibNum % 10;
         switch(lastDigit){ // Properly numerates which fibonacci number is being calculated
             case 1: std::cout << fibNum << "st "; break;
@@ -74,11 +72,15 @@ int main(int argc, char** argv)
             case 3: std::cout << fibNum << "rd "; break;
             default: std::cout << fibNum << "th ";
         }
-        time(&printTimerInit);
+        clock_gettime(CLOCK_MONOTONIC, &printStart);
         std::cout << "fibonacci number is: " << result << std::endl;
-        time(&printTimerEnd);
-        std::cout << "Printing took " << difftime(printTimerEnd, printTimerInit) << " seconds." << std::endl;
+        clock_gettime(CLOCK_MONOTONIC, &printFinish);
+        std::cout << "Printing " <<
+            (printFinish.tv_sec - printStart.tv_sec) + ((printFinish.tv_nsec - printStart.tv_nsec) / 1000000000.0)
+            << " seconds." << std::endl;
     }
-    std::cout << "Calculation took " << difftime(calcTimerEnd, calcTimerInit) << " seconds." << std::endl;
+    std::cout << "Calculation took " <<
+        (calcFinish.tv_sec - calcStart.tv_sec) + ((calcFinish.tv_nsec - calcStart.tv_nsec) / 1000000000.0)
+        << " seconds." << std::endl;
     return 0;
 }
