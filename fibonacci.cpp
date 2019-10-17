@@ -75,12 +75,14 @@ int main(int argc, char** argv)
         clock_gettime(CLOCK_MONOTONIC, &printStart);
         std::cout << "fibonacci number is: " << result << std::endl;
         clock_gettime(CLOCK_MONOTONIC, &printFinish);
-        std::cout << "Printing " <<
+        std::cout << "Printing took " <<
             (printFinish.tv_sec - printStart.tv_sec) + ((printFinish.tv_nsec - printStart.tv_nsec) / 1000000000.0)
             << " seconds." << std::endl;
+        std::cout << "Calculation took " <<
+            (calcFinish.tv_sec - calcStart.tv_sec) + ((calcFinish.tv_nsec - calcStart.tv_nsec) / 1000000000.0)
+            << " seconds." << std::endl;
     }
-    std::cout << "Calculation took " <<
-        (calcFinish.tv_sec - calcStart.tv_sec) + ((calcFinish.tv_nsec - calcStart.tv_nsec) / 1000000000.0)
-        << " seconds." << std::endl;
+    else
+    std::cout << (calcFinish.tv_sec - calcStart.tv_sec) + ((calcFinish.tv_nsec - calcStart.tv_nsec) / 1000000000.0) << std::endl;
     return 0;
 }

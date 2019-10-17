@@ -2,11 +2,19 @@ RED=\033[31m
 GREEN=\033[5;32m
 NORMAL=\033[0m
 fibNum=1000000
-fib.out:
+fib.out: fibonacci.cpp
 ifeq (,$(wildcard /usr/local/include/gmpxx.h))
 	make gmpGet
 endif
 	g++ fibonacci.cpp -o fib.out -lgmpxx -lgmp
+
+compare.out: fibCompare.cpp
+ifeq (,$(wildcard /usr/local/include/gmpxx.h))
+	make gmpGet
+endif
+	g++ fibCompare.cpp -o compare.out -lgmpxx -lgmp
+
+compile: compare.out fib.out
 
 gmpGet:
 ifeq (,$(wildcard gmp-6.1.2.tar.xz))
@@ -27,6 +35,9 @@ fibQuick: fib.out
 
 fibSlow: fib.out
 	./fib.out $(fibNum) 0 1
+
+compare: compare.out
+	./compare.out
 
 clean:
 	$(RM) *.out *.swp *.swo
